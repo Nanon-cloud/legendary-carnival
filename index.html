@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thai Consonant Drill (3 Hearts)</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { margin: 0; background: #0b0f17; color: #e9eefc; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 24px; }
+    .card {
+      background: #121a2a;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    h1 { margin: 0 0 6px; font-size: 20px; font-weight: 700; }
+    .sub { margin: 0 0 14px; opacity: .85; font-size: 14px; }
+
+    .topbar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .pill {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      white-space: nowrap;
+    }
+    .hearts { display: inline-flex; gap: 6px; align-items: center; }
+    .heart {
+      font-size: 18px;
+      line-height: 1;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,.25));
+    }
+    .heart.alive { color: #ff4d6d; }
+    .heart.dead  { color: rgba(255,255,255,.25); }
+
+    .quiz {
+      display: grid;
+      gap: 14px;
+      align-items: start;
+    }
+    .prompt {
+      text-align: center;
+      padding: 16px 10px;
+      border-radius: 14px;
+      border: 1px dashed rgba(255,255,255,.16);
+      background: rgba(255,255,255,.04);
+    }
+    .big {
+      font-size: 110px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      margin: 0;
+      line-height: 1;
+    }
+    .question { margin: 10px 0 0; font-size: 15px; opacity: .9; }
+
+    .grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    @media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }
+
+    button.choice {
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: #e9eefc;
+      padding: 14px 12px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 650;
+      transition: transform .06s ease, background .15s ease, border-color .15s ease;
+    }
+    button.choice:hover { background: rgba(255,255,255,.10); }
+    button.choice:active { transform: scale(.99); }
+    button.choice[disabled] { opacity: .6; cursor: not-allowed; }
+
+    .feedback {
+      min-height: 28px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      font-size: 14px;
+    }
+    .ok { color: #58f08a; }
+    .bad { color: #ff9aa9; }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 4px;
+    }
+    .btn {
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      color: #e9eefc;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 650;
+    }
+    .btn.primary { background: rgba(88,240,138,.14); border-color: rgba(88,240,138,.35); }
+    .btn.danger  { background: rgba(255,77,109,.14); border-color: rgba(255,77,109,.35); }
+
+    .footer { margin-top: 14px; opacity: .7; font-size: 12px; text-align: center; }
+    .toggle { cursor: pointer; user-select: none; }
+    input[type="checkbox"] { transform: translateY(1px); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>ฝึกพยัญชนะไทย (Thai Consonant Drill)</h1>
+      <p class="sub">เลือก “ชื่อ” ของพยัญชนะที่แสดง (ผิดได้ 3 ครั้ง = 3 หัวใจ)</p>
+
+      <div class="topbar">
+        <div class="pill">
+          <span>❤️ ชีวิต:</span>
+          <span class="hearts" id="hearts"></span>
+        </div>
+        <div class="pill"><span>คะแนน:</span> <strong id="score">0</strong></div>
+        <div class="pill"><span>เหลือ:</span> <strong id="remaining">0</strong></div>
+        <label class="pill toggle" title="แสดงชื่อแบบเต็ม เช่น ก ไก่">
+          <input id="showPair" type="checkbox" />
+          <span>แสดงแบบ “ก ไก่”</span>
+        </label>
+      </div>
+
+      <div class="quiz">
+        <div class="prompt">
+          <p class="big" id="currentChar">ก</p>
+          <p class="question" id="questionText">พยัญชนะนี้ชื่อว่าอะไร?</p>
+        </div>
+
+        <div class="grid" id="choices"></div>
+
+        <div class="feedback" id="feedback">กดคำตอบเพื่อเริ่ม</div>
+
+        <div class="actions">
+          <button class="btn primary" id="nextBtn" disabled>ข้อถัดไป</button>
+          <button class="btn danger" id="restartBtn">เริ่มใหม่</button>
+        </div>
+
+        <div class="footer">
+          ระบบจะ “ไม่ถามซ้ำ” ตัวที่คุณตอบถูกแล้ว ✅
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 44 Thai consonants (including ฃ, ฅ, ฆ etc.)
+    const ALL = [
+      { ch: "ก", name: "ไก่" },   { ch: "ข", name: "ไข่" },     { ch: "ฃ", name: "ขวด" },
+      { ch: "ค", name: "ควาย" },  { ch: "ฅ", name: "คน" },     { ch: "ฆ", name: "ระฆัง" },
+      { ch: "ง", name: "งู" },    { ch: "จ", name: "จาน" },    { ch: "ฉ", name: "ฉิ่ง" },
+      { ch: "ช", name: "ช้าง" },  { ch: "ซ", name: "โซ่" },    { ch: "ฌ", name: "เฌอ" },
+      { ch: "ญ", name: "ญิง" },   { ch: "ฎ", name: "ชฎา" },    { ch: "ฏ", name: "ปฏัก" },
+      { ch: "ฐ", name: "ฐาน" },   { ch: "ฑ", name: "มณโฑ" },   { ch: "ฒ", name: "ผู้เฒ่า" },
+      { ch: "ณ", name: "เณร" },   { ch: "ด", name: "เด็ก" },   { ch: "ต", name: "เต่า" },
+      { ch: "ถ", name: "ถุง" },   { ch: "ท", name: "ทหาร" },   { ch: "ธ", name: "ธง" },
+      { ch: "น", name: "หนู" },   { ch: "บ", name: "ใบไม้" },  { ch: "ป", name: "ปลา" },
+      { ch: "ผ", name: "ผึ้ง" },  { ch: "ฝ", name: "ฝา" },     { ch: "พ", name: "พาน" },
+      { ch: "ฟ", name: "ฟัน" },   { ch: "ภ", name: "สำเภา" },  { ch: "ม", name: "ม้า" },
+      { ch: "ย", name: "ยักษ์" }, { ch: "ร", name: "เรือ" },   { ch: "ล", name: "ลิง" },
+      { ch: "ว", name: "แหวน" },  { ch: "ศ", name: "ศาลา" },   { ch: "ษ", name: "ฤๅษี" },
+      { ch: "ส", name: "เสือ" },  { ch: "ห", name: "หีบ" },    { ch: "ฬ", name: "จุฬา" },
+      { ch: "อ", name: "อ่าง" },  { ch: "ฮ", name: "นกฮูก" }
+    ];
+
+    // State
+    let remaining = [];     // items not yet answered correctly
+    let lives = 3;
+    let score = 0;
+    let current = null;
+    let lastAsked = null;
+    let locked = false;
+
+    // UI
+    const heartsEl = document.getElementById("hearts");
+    const scoreEl = document.getElementById("score");
+    const remainingEl = document.getElementById("remaining");
+    const currentCharEl = document.getElementById("currentChar");
+    const choicesEl = document.getElementById("choices");
+    const feedbackEl = document.getElementById("feedback");
+    const nextBtn = document.getElementById("nextBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const showPairEl = document.getElementById("showPair");
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function renderHearts() {
+      heartsEl.innerHTML = "";
+      for (let i = 0; i < 3; i++) {
+        const span = document.createElement("span");
+        span.className = "heart " + (i < lives ? "alive" : "dead");
+        span.textContent = "♥";
+        heartsEl.appendChild(span);
+      }
+    }
+
+    function updateStats() {
+      scoreEl.textContent = String(score);
+      remainingEl.textContent = String(remaining.length);
+      renderHearts();
+    }
+
+    function setFeedback(msg, type) {
+      feedbackEl.innerHTML = msg;
+      feedbackEl.classList.remove("ok", "bad");
+      if (type) feedbackEl.classList.add(type);
+    }
+
+    function pickNext() {
+      if (remaining.length === 0) {
+        current = null;
+        currentCharEl.textContent = "🎉";
+        choicesEl.innerHTML = "";
+        nextBtn.disabled = true;
+        setFeedback(`จบแล้ว! คุณทำครบทุกตัว ✅<br>คะแนน: <b>${score}</b>`, "ok");
+        return;
+      }
+
+      // Avoid asking the same consonant twice in a row (if possible)
+      let candidates = remaining;
+      if (remaining.length > 1 && lastAsked) {
+        const filtered = remaining.filter(x => x.ch !== lastAsked.ch);
+        if (filtered.length > 0) candidates = filtered;
+      }
+
+      current = candidates[Math.floor(Math.random() * candidates.length)];
+      lastAsked = current;
+
+      currentCharEl.textContent = current.ch;
+      buildChoices();
+      nextBtn.disabled = true;
+      locked = false;
+      setFeedback("พยัญชนะนี้ชื่อว่าอะไร?", null);
+    }
+
+    function buildChoices() {
+      const correct = current;
+      const pool = ALL.filter(x => x.ch !== correct.ch);
+      shuffle(pool);
+
+      // pick 3 wrong options
+      const wrongs = pool.slice(0, 3);
+      const options = shuffle([correct, ...wrongs]);
+
+      choicesEl.innerHTML = "";
+      options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "choice";
+        btn.type = "button";
+        btn.dataset.ch = opt.ch;
+
+        const showPair = showPairEl.checked;
+        btn.textContent = showPair ? `${opt.ch} ${opt.name}` : opt.name;
+
+        btn.addEventListener("click", () => choose(opt));
+        choicesEl.appendChild(btn);
+      });
+    }
+
+    function disableChoices() {
+      [...choicesEl.querySelectorAll("button.choice")].forEach(b => b.disabled = true);
+    }
+
+    function choose(opt) {
+      if (locked || !current) return;
+      locked = true;
+
+      const isCorrect = opt.ch === current.ch;
+
+      if (isCorrect) {
+        // Remove from remaining so it won't be asked again
+        remaining = remaining.filter(x => x.ch !== current.ch);
+        score += 1;
+        updateStats();
+        disableChoices();
+        setFeedback(`ถูกต้อง ✅ <b>${current.ch} ${current.name}</b>`, "ok");
+
+        nextBtn.disabled = false;
+        nextBtn.focus();
+      } else {
+        lives -= 1;
+        updateStats();
+        disableChoices();
+
+        if (lives <= 0) {
+          nextBtn.disabled = true;
+          setFeedback(`ผิด ❌ คำตอบที่ถูกคือ <b>${current.ch} ${current.name}</b><br><br><b>เกมจบแล้ว</b> (ผิดครบ 3 ครั้ง)`, "bad");
+          currentCharEl.textContent = "💔";
+          return;
+        }
+
+        setFeedback(`ผิด ❌ คำตอบที่ถูกคือ <b>${current.ch} ${current.name}</b> (เหลืออีก ${lives} หัวใจ)`, "bad");
+        nextBtn.disabled = false;
+        nextBtn.focus();
+      }
+    }
+
+    function restart() {
+      remaining = ALL.map(x => ({...x})); // fresh copy
+      lives = 3;
+      score = 0;
+      lastAsked = null;
+      updateStats();
+      pickNext();
+    }
+
+    nextBtn.addEventListener("click", () => {
+      pickNext();
+    });
+
+    restartBtn.addEventListener("click", () => restart());
+
+    showPairEl.addEventListener("change", () => {
+      // Re-render choices with the display mode, if a question is active
+      if (current) buildChoices();
+    });
+
+    // Start
+    restart();
+  </script>
+</body>
+</html>
