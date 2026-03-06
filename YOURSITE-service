@@ -3,262 +3,359 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Thai Consonant Drill (3 Hearts)</title>
+  <title>Thai Consonant Drill</title>
   <style>
-    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-    * { box-sizing: border-box; }
-    body { margin: 0; background: #0b0f17; color: #e9eefc; }
-    .wrap { max-width: 760px; margin: 0 auto; padding: 24px; }
-    .card {
-      background: #121a2a;
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 18px;
-      padding: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    :root{
+      --bg:#050b16;
+      --panel:#0d1830;
+      --panel-2:#15233f;
+      --panel-3:#1c2942;
+      --border:rgba(255,255,255,.10);
+      --text:#eaf1ff;
+      --muted:#b8c4df;
+      --green:#46d17d;
+      --green-bg:rgba(70,209,125,.14);
+      --red:#ff5c7c;
+      --red-bg:rgba(255,92,124,.14);
+      --pill:#23314b;
+      --shadow:0 18px 50px rgba(0,0,0,.35);
+      --radius:20px;
     }
 
-    h1 { margin: 0 0 6px; font-size: 20px; font-weight: 700; }
-    .sub { margin: 0 0 14px; opacity: .85; font-size: 14px; }
+    *{box-sizing:border-box}
 
-    .hidden { display: none !important; }
-
-    .start-screen {
-      display: grid;
-      gap: 14px;
-      margin-top: 14px;
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(circle at top, #0a1730 0%, #050b16 45%, #040812 100%);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:22px;
     }
 
-    .start-box {
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 14px;
-      padding: 16px;
-      display: grid;
-      gap: 12px;
+    .shell{
+      width:min(100%, 900px);
     }
 
-    .label {
-      font-size: 14px;
-      opacity: .9;
+    .card{
+      background:linear-gradient(180deg, rgba(15,27,53,.96), rgba(9,19,41,.96));
+      border:1px solid var(--border);
+      border-radius:28px;
+      padding:20px;
+      box-shadow:var(--shadow);
     }
 
-    .input {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.08);
-      color: #e9eefc;
-      font-size: 15px;
-      outline: none;
+    .title{
+      font-size:20px;
+      font-weight:800;
+      margin:0 0 2px 0;
     }
 
-    .input::placeholder {
-      color: rgba(233,238,252,.55);
+    .subtitle{
+      margin:0 0 16px 0;
+      color:var(--muted);
+      font-size:14px;
+      font-weight:600;
     }
 
-    .topbar {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
+    .hidden{display:none !important;}
+
+    .start-box{
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-bottom:10px;
     }
 
-    .pill {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.08);
-      padding: 8px 10px;
-      border-radius: 999px;
-      font-size: 13px;
-      display: inline-flex;
-      gap: 8px;
-      align-items: center;
-      white-space: nowrap;
+    .start-label{
+      font-size:15px;
+      font-weight:700;
+      color:var(--text);
     }
 
-    .hearts {
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
+    .start-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
     }
 
-    .heart {
-      font-size: 18px;
-      line-height: 1;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,.25));
+    .input{
+      flex:1 1 240px;
+      min-width:220px;
+      padding:13px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:#111c33;
+      color:var(--text);
+      font-size:15px;
+      outline:none;
     }
 
-    .heart.alive { color: #ff4d6d; }
-    .heart.dead  { color: rgba(255,255,255,.25); }
-
-    .quiz {
-      display: grid;
-      gap: 14px;
-      align-items: start;
+    .input::placeholder{
+      color:#8fa0c4;
     }
 
-    .prompt {
-      text-align: center;
-      padding: 16px 10px;
-      border-radius: 14px;
-      border: 1px dashed rgba(255,255,255,.16);
-      background: rgba(255,255,255,.04);
+    .btn{
+      border:none;
+      border-radius:14px;
+      padding:12px 18px;
+      font-size:15px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.15s ease;
     }
 
-    .big {
-      font-size: 110px;
-      font-weight: 800;
-      letter-spacing: 2px;
-      margin: 0;
-      line-height: 1;
+    .btn:hover{
+      transform:translateY(-1px);
+      opacity:.96;
     }
 
-    .question { margin: 10px 0 0; font-size: 15px; opacity: .9; }
-
-    .grid {
-      display: grid;
-      gap: 10px;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .btn:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+      transform:none;
     }
 
-    @media (max-width: 520px) {
-      .grid { grid-template-columns: 1fr; }
+    .btn-primary{
+      background:#177df0;
+      color:white;
+      box-shadow:0 8px 20px rgba(23,125,240,.22);
     }
 
-    .choice {
-      text-align: left;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      color: #fff;
-      padding: 14px 14px;
-      border-radius: 14px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: transform .04s ease, border-color .15s ease, background .15s ease;
+    .btn-next{
+      background:var(--green-bg);
+      color:#dff9ea;
+      border:1px solid rgba(70,209,125,.35);
     }
 
-    .choice:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.24); }
-    .choice:disabled { opacity: .85; cursor: not-allowed; }
-
-    .feedback {
-      min-height: 28px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      font-size: 14px;
+    .btn-restart{
+      background:var(--red-bg);
+      color:#ffe3ea;
+      border:1px solid rgba(255,92,124,.35);
     }
 
-    .ok { color: #58f08a; }
-    .bad { color: #ff9aa9; }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 4px;
+    .start-note{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:600;
     }
 
-    .btn {
-      cursor: pointer;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.08);
-      color: #e9eefc;
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 650;
+    .topbar{
+      display:grid;
+      grid-template-columns:repeat(5, max-content);
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:16px;
     }
 
-    .btn.primary {
-      background: rgba(88,240,138,.14);
-      border-color: rgba(88,240,138,.35);
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:var(--pill);
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--text);
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:800;
+      white-space:nowrap;
     }
 
-    .btn.danger {
-      background: rgba(255,77,109,.14);
-      border-color: rgba(255,77,109,.35);
+    .hearts{
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
     }
 
-    .btn:disabled {
-      opacity: .65;
-      cursor: not-allowed;
+    .heart{
+      font-size:18px;
+      line-height:1;
     }
 
-    .footer {
-      margin-top: 14px;
-      opacity: .7;
-      font-size: 12px;
-      text-align: center;
+    .alive{ color:#ff4f73; }
+    .dead{ color:rgba(255,255,255,.25); }
+
+    .toggle{
+      cursor:pointer;
+      user-select:none;
     }
 
-    .toggle {
-      cursor: pointer;
-      user-select: none;
+    .quiz-box{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
     }
 
-    input[type="checkbox"] { transform: translateY(1px); }
+    .prompt{
+      background:var(--panel-3);
+      border:1px dashed rgba(255,255,255,.14);
+      border-radius:20px;
+      min-height:200px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:18px;
+    }
 
-    .small-note {
-      font-size: 13px;
-      opacity: .75;
+    .big-char{
+      font-size:112px;
+      line-height:1;
+      font-weight:900;
+      margin:0 0 10px 0;
+      color:#eef3ff;
+    }
+
+    .question{
+      margin:0;
+      font-size:15px;
+      color:#d5def2;
+      font-weight:700;
+    }
+
+    .choices{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .choice{
+      width:100%;
+      background:#202e47;
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:18px 14px;
+      font-size:18px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+
+    .choice:hover{
+      transform:translateY(-1px);
+      background:#263652;
+    }
+
+    .choice:disabled{
+      opacity:.85;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .feedback{
+      min-height:58px;
+      padding:16px 14px;
+      border-radius:16px;
+      background:#081328;
+      border:1px solid rgba(255,255,255,.10);
+      color:#f0f4ff;
+      font-size:16px;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+    }
+
+    .feedback.ok{
+      color:#dff9ea;
+      border-color:rgba(70,209,125,.25);
+    }
+
+    .feedback.bad{
+      color:#ffe3ea;
+      border-color:rgba(255,92,124,.25);
+    }
+
+    .actions{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:4px;
+    }
+
+    .footer{
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:700;
+      padding-top:4px;
+    }
+
+    @media (max-width: 840px){
+      .topbar{
+        grid-template-columns:repeat(2, 1fr);
+        justify-content:stretch;
+      }
+      .pill{
+        justify-content:center;
+      }
+    }
+
+    @media (max-width: 620px){
+      body{padding:14px;}
+      .card{padding:16px;}
+      .choices{grid-template-columns:1fr;}
+      .topbar{grid-template-columns:1fr;}
+      .big-char{font-size:88px;}
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="shell">
     <div class="card">
-      <h1>ฝึกพยัญชนะไทย (Thai Consonant Drill)</h1>
-      <p class="sub">เลือก “ชื่อ” ของพยัญชนะที่แสดง (ผิดได้ 3 ครั้ง = 3 หัวใจ)</p>
+      <h1 class="title">ฝึกพยัญชนะไทย (Thai Consonant Drill)</h1>
+      <p class="subtitle">เลือก “ชื่อ” ของพยัญชนะที่แสดง (ผิดได้ 3 ครั้ง = 3 หัวใจ)</p>
 
-      <div id="startScreen" class="start-screen">
-        <div class="start-box">
-          <div class="label">Please enter your nickname before starting the quiz</div>
-          <input id="nicknameInput" class="input" type="text" placeholder="Enter nickname" maxlength="30" />
-          <button id="startBtn" class="btn primary" type="button">Start Quiz</button>
-          <div id="startMessage" class="small-note">Your start counter will increase every time you begin the quiz.</div>
+      <div id="startScreen" class="start-box">
+        <div class="start-label">Please enter your nickname before starting the quiz</div>
+        <div class="start-row">
+          <input id="nicknameInput" class="input" type="text" placeholder="Your nickname" maxlength="30">
+          <button id="startBtn" class="btn btn-primary" type="button">Start Quiz</button>
         </div>
+        <div id="startMessage" class="start-note">Your start counter will increase every time you begin the quiz.</div>
       </div>
 
-      <div id="quizScreen" class="hidden">
+      <div id="quizScreen">
         <div class="topbar">
-          <div class="pill">
-            <span>👤 Player:</span>
-            <strong id="playerInfo">-</strong>
-          </div>
-          <div class="pill">
-            <span>❤️ ชีวิต:</span>
-            <span class="hearts" id="hearts"></span>
-          </div>
-          <div class="pill"><span>คะแนน:</span> <strong id="score">0</strong></div>
-          <div class="pill"><span>เหลือ:</span> <strong id="remaining">0</strong></div>
-          <label class="pill toggle" title="แสดงชื่อแบบเต็ม เช่น ก ไก่">
+          <div class="pill">👤 Player: <strong id="playerInfo">-</strong></div>
+          <div class="pill">❤️ ชีวิต: <span id="hearts" class="hearts"></span></div>
+          <div class="pill">คะแนน: <strong id="score">0</strong></div>
+          <div class="pill">เหลือ: <strong id="remaining">0</strong></div>
+          <label class="pill toggle">
             <input id="showPair" type="checkbox" />
             <span>แสดงแบบ “ก ไก่”</span>
           </label>
         </div>
 
-        <div class="quiz">
+        <div class="quiz-box">
           <div class="prompt">
-            <p class="big" id="currentChar">ก</p>
-            <p class="question" id="questionText">พยัญชนะนี้ชื่อว่าอะไร?</p>
+            <p id="currentChar" class="big-char">ก</p>
+            <p id="questionText" class="question">พยัญชนะนี้ชื่อว่าอะไร?</p>
           </div>
 
-          <div class="grid" id="choices"></div>
+          <div id="choices" class="choices"></div>
 
-          <div class="feedback" id="feedback">Press Start Quiz to begin</div>
+          <div id="feedback" class="feedback">กรอกชื่อก่อนเริ่ม</div>
 
           <div class="actions">
-            <button class="btn primary" id="nextBtn" type="button" disabled>ข้อถัดไป</button>
-            <button class="btn danger" id="restartBtn" type="button">เริ่มใหม่</button>
+            <button id="nextBtn" class="btn btn-next" type="button" disabled>ข้อถัดไป</button>
+            <button id="restartBtn" class="btn btn-restart" type="button">เริ่มใหม่</button>
           </div>
 
-          <div class="footer">
-            ระบบจะ “ไม่ถามซ้ำ” ตัวที่คุณตอบถูกแล้ว ✅
-          </div>
+          <div class="footer">ระบบจะ “ไม่ถามซ้ำ” ตัวที่คุณตอบถูกแล้ว ✅</div>
         </div>
       </div>
     </div>
@@ -284,7 +381,6 @@
     ];
 
     const startScreen = document.getElementById("startScreen");
-    const quizScreen = document.getElementById("quizScreen");
     const nicknameInput = document.getElementById("nicknameInput");
     const startBtn = document.getElementById("startBtn");
     const startMessage = document.getElementById("startMessage");
@@ -307,7 +403,6 @@
     let score = 0;
     let locked = false;
     let lastAsked = null;
-
     let nickname = "";
     let startCount = 0;
 
@@ -335,16 +430,19 @@
       renderHearts();
     }
 
-    function setFeedback(html, cls) {
+    function setFeedback(text, cls = "") {
       feedbackEl.className = "feedback" + (cls ? " " + cls : "");
-      feedbackEl.innerHTML = html;
+      feedbackEl.innerHTML = text;
+    }
+
+    function disableChoices() {
+      [...choicesEl.querySelectorAll(".choice")].forEach(btn => btn.disabled = true);
     }
 
     function buildChoices() {
       const correct = current;
       const pool = ALL.filter(x => x.ch !== correct.ch);
       shuffle(pool);
-
       const wrongs = pool.slice(0, 3);
       const options = shuffle([correct, ...wrongs]);
 
@@ -353,20 +451,22 @@
         const btn = document.createElement("button");
         btn.className = "choice";
         btn.type = "button";
-
-        const showPair = showPairEl.checked;
-        btn.textContent = showPair ? `${opt.ch} ${opt.name}` : opt.name;
-
+        btn.textContent = showPairEl.checked ? `${opt.ch} ${opt.name}` : opt.name;
         btn.addEventListener("click", () => choose(opt));
         choicesEl.appendChild(btn);
       });
     }
 
-    function disableChoices() {
-      [...choicesEl.querySelectorAll("button.choice")].forEach(b => b.disabled = true);
-    }
-
     function pickNext() {
+      if (!nickname) {
+        currentCharEl.textContent = "ก";
+        questionTextEl.textContent = "พยัญชนะนี้ชื่อว่าอะไร?";
+        choicesEl.innerHTML = "";
+        setFeedback("กรอกชื่อก่อนเริ่ม");
+        nextBtn.disabled = true;
+        return;
+      }
+
       if (remaining.length === 0) {
         current = null;
         currentCharEl.textContent = "🎉";
@@ -385,97 +485,99 @@
 
       current = candidates[Math.floor(Math.random() * candidates.length)];
       lastAsked = current;
-
       currentCharEl.textContent = current.ch;
       questionTextEl.textContent = "พยัญชนะนี้ชื่อว่าอะไร?";
       buildChoices();
       nextBtn.disabled = true;
       locked = false;
-      setFeedback("เลือกคำตอบที่ถูกต้อง", null);
+      setFeedback("เลือกคำตอบที่ถูกต้อง");
     }
 
     function choose(opt) {
       if (locked || !current) return;
       locked = true;
 
-      const isCorrect = opt.ch === current.ch;
+      const correct = opt.ch === current.ch;
+      disableChoices();
 
-      if (isCorrect) {
+      if (correct) {
         remaining = remaining.filter(x => x.ch !== current.ch);
         score += 1;
         updateStats();
-        disableChoices();
         setFeedback(`ถูกต้อง ✅ <b>${current.ch} ${current.name}</b>`, "ok");
         nextBtn.disabled = false;
-      } else {
-        lives -= 1;
-        updateStats();
-        disableChoices();
-
-        if (lives <= 0) {
-          nextBtn.disabled = true;
-          setFeedback(`ผิด ❌ คำตอบที่ถูกคือ <b>${current.ch} ${current.name}</b><br><br><b>เกมจบแล้ว</b> (ผิดครบ 3 ครั้ง)`, "bad");
-          currentCharEl.textContent = "💔";
-          questionTextEl.textContent = "ลองเริ่มใหม่อีกครั้ง";
-          return;
-        }
-
-        setFeedback(`ผิด ❌ คำตอบที่ถูกคือ <b>${current.ch} ${current.name}</b> (เหลืออีก ${lives} หัวใจ)`, "bad");
-        nextBtn.disabled = false;
+        return;
       }
+
+      lives -= 1;
+      updateStats();
+
+      if (lives <= 0) {
+        currentCharEl.textContent = "💔";
+        questionTextEl.textContent = "ลองเริ่มใหม่อีกครั้ง";
+        nextBtn.disabled = true;
+        setFeedback(`ผิด ❌ คำตอบที่ถูกคือ <b>${current.ch} ${current.name}</b><br><br><b>เกมจบแล้ว</b> (ผิดครบ 3 ครั้ง)`, "bad");
+        return;
+      }
+
+      setFeedback(`ผิด ❌ คำตอบที่ถูกคือ <b>${current.ch} ${current.name}</b> (เหลืออีก ${lives} หัวใจ)`, "bad");
+      nextBtn.disabled = false;
     }
 
-    function resetQuizState() {
+    function updatePlayerInfo() {
+      playerInfoEl.textContent = nickname ? `${nickname} | starts: ${startCount}` : "-";
+    }
+
+    function resetQuiz() {
       remaining = ALL.map(x => ({ ...x }));
       lives = 3;
       score = 0;
+      locked = false;
       lastAsked = null;
       updateStats();
       pickNext();
     }
 
     function startQuiz() {
-      const rawName = nicknameInput.value.trim();
-
-      if (!rawName) {
-        startMessage.textContent = "Please enter your nickname first.";
+      const name = nicknameInput.value.trim();
+      if (!name) {
+        startMessage.textContent = "You must enter your name before starting.";
         return;
       }
 
-      nickname = rawName;
+      nickname = name;
       startCount += 1;
-
-      playerInfoEl.textContent = `${nickname} | starts: ${startCount}`;
+      updatePlayerInfo();
 
       startScreen.classList.add("hidden");
-      quizScreen.classList.remove("hidden");
-
-      resetQuizState();
       setFeedback(`Welcome ${nickname}! This is start number ${startCount}.`, "ok");
+      resetQuiz();
+    }
+
+    function restartQuiz() {
+      if (!nickname) {
+        setFeedback("กรอกชื่อก่อนเริ่ม");
+        return;
+      }
+      startCount += 1;
+      updatePlayerInfo();
+      resetQuiz();
+      setFeedback(`Welcome back ${nickname}! This is start number ${startCount}.`, "ok");
     }
 
     startBtn.addEventListener("click", startQuiz);
-
+    restartBtn.addEventListener("click", restartQuiz);
+    nextBtn.addEventListener("click", pickNext);
+    showPairEl.addEventListener("change", () => {
+      if (current) buildChoices();
+    });
     nicknameInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") startQuiz();
     });
 
-    nextBtn.addEventListener("click", () => {
-      pickNext();
-    });
-
-    restartBtn.addEventListener("click", () => {
-      startCount += 1;
-      playerInfoEl.textContent = `${nickname} | starts: ${startCount}`;
-      resetQuizState();
-      setFeedback(`Welcome back ${nickname}! This is start number ${startCount}.`, "ok");
-    });
-
-    showPairEl.addEventListener("change", () => {
-      if (current) buildChoices();
-    });
-
-    renderHearts();
+    updatePlayerInfo();
+    updateStats();
+    pickNext();
   </script>
 </body>
 </html>
