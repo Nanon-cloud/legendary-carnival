@@ -214,21 +214,19 @@
       <h1>ฝึกพยัญชนะไทย (Thai Consonant Drill)</h1>
       <p class="sub">เลือก “ชื่อ” ของพยัญชนะที่แสดง (ผิดได้ 3 ครั้ง = 3 หัวใจ)</p>
 
-      <!-- Start screen -->
       <div id="startScreen" class="start-screen">
         <div class="start-box">
-          <div class="label">กรุณาใส่ชื่อเล่นก่อนเริ่ม quiz</div>
-          <input id="nicknameInput" class="input" type="text" placeholder="เช่น Gla" maxlength="30" />
+          <div class="label">Please enter your nickname before starting the quiz</div>
+          <input id="nicknameInput" class="input" type="text" placeholder="Enter nickname" maxlength="30" />
           <button id="startBtn" class="btn primary" type="button">Start Quiz</button>
-          <div id="startMessage" class="small-note">ระบบจะบันทึกจำนวนครั้งที่คุณเริ่ม quiz</div>
+          <div id="startMessage" class="small-note">Your start counter will increase every time you begin the quiz.</div>
         </div>
       </div>
 
-      <!-- Quiz screen -->
       <div id="quizScreen" class="hidden">
         <div class="topbar">
           <div class="pill">
-            <span>👤 ผู้เล่น:</span>
+            <span>👤 Player:</span>
             <strong id="playerInfo">-</strong>
           </div>
           <div class="pill">
@@ -251,7 +249,7 @@
 
           <div class="grid" id="choices"></div>
 
-          <div class="feedback" id="feedback">กด Start Quiz เพื่อเริ่ม</div>
+          <div class="feedback" id="feedback">Press Start Quiz to begin</div>
 
           <div class="actions">
             <button class="btn primary" id="nextBtn" type="button" disabled>ข้อถัดไป</button>
@@ -267,15 +265,12 @@
   </div>
 
   <script>
-    const BACKEND_URL = "https://legendary-carnival-service.onrender.com";
-
-    // 44 Thai consonants
     const ALL = [
       { ch: "ก", name: "ไก่" },   { ch: "ข", name: "ไข่" },     { ch: "ฃ", name: "ขวด" },
       { ch: "ค", name: "ควาย" },  { ch: "ฅ", name: "คน" },     { ch: "ฆ", name: "ระฆัง" },
       { ch: "ง", name: "งู" },    { ch: "จ", name: "จาน" },    { ch: "ฉ", name: "ฉิ่ง" },
       { ch: "ช", name: "ช้าง" },  { ch: "ซ", name: "โซ่" },    { ch: "ฌ", name: "เฌอ" },
-      { ch: "ญ", name: "ญิง" },   { ch: "ฎ", name: "ชฎา" },    { ch: "ฏ", name: "ปฏัก" },
+      { ch: "ญ", name: "หญิง" },  { ch: "ฎ", name: "ชฎา" },    { ch: "ฏ", name: "ปฏัก" },
       { ch: "ฐ", name: "ฐาน" },   { ch: "ฑ", name: "มณโฑ" },   { ch: "ฒ", name: "ผู้เฒ่า" },
       { ch: "ณ", name: "เณร" },   { ch: "ด", name: "เด็ก" },   { ch: "ต", name: "เต่า" },
       { ch: "ถ", name: "ถุง" },   { ch: "ท", name: "ทหาร" },   { ch: "ธ", name: "ธง" },
@@ -358,7 +353,6 @@
         const btn = document.createElement("button");
         btn.className = "choice";
         btn.type = "button";
-        btn.dataset.ch = opt.ch;
 
         const showPair = showPairEl.checked;
         btn.textContent = showPair ? `${opt.ch} ${opt.name}` : opt.name;
@@ -413,7 +407,6 @@
         disableChoices();
         setFeedback(`ถูกต้อง ✅ <b>${current.ch} ${current.name}</b>`, "ok");
         nextBtn.disabled = false;
-        nextBtn.focus();
       } else {
         lives -= 1;
         updateStats();
@@ -429,7 +422,6 @@
 
         setFeedback(`ผิด ❌ คำตอบที่ถูกคือ <b>${current.ch} ${current.name}</b> (เหลืออีก ${lives} หัวใจ)`, "bad");
         nextBtn.disabled = false;
-        nextBtn.focus();
       }
     }
 
@@ -442,56 +434,30 @@
       pickNext();
     }
 
-    async function startQuiz() {
+    function startQuiz() {
       const rawName = nicknameInput.value.trim();
 
       if (!rawName) {
-        startMessage.textContent = "กรุณาใส่ชื่อเล่นก่อน";
+        startMessage.textContent = "Please enter your nickname first.";
         return;
       }
 
-      startBtn.disabled = true;
-      startMessage.textContent = "กำลังเชื่อมต่อ backend...";
+      nickname = rawName;
+      startCount += 1;
 
-      try {
-        const response = await fetch(`${BACKEND_URL}/start`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ nickname: rawName })
-        });
+      playerInfoEl.textContent = `${nickname} | starts: ${startCount}`;
 
-        if (!response.ok) {
-          throw new Error("Backend error");
-        }
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
 
-        const data = await response.json();
-
-        nickname = data.nickname;
-        startCount = data.starts;
-
-        playerInfoEl.textContent = `${nickname} | starts: ${startCount}`;
-
-        startScreen.classList.add("hidden");
-        quizScreen.classList.remove("hidden");
-
-        resetQuizState();
-        setFeedback(`ยินดีต้อนรับ ${nickname}! นี่คือการเริ่มครั้งที่ ${startCount}`, "ok");
-      } catch (error) {
-        console.error(error);
-        startMessage.textContent = "เชื่อมต่อ backend ไม่สำเร็จ กรุณาตรวจสอบ Render service และ database";
-      } finally {
-        startBtn.disabled = false;
-      }
+      resetQuizState();
+      setFeedback(`Welcome ${nickname}! This is start number ${startCount}.`, "ok");
     }
 
     startBtn.addEventListener("click", startQuiz);
 
     nicknameInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        startQuiz();
-      }
+      if (e.key === "Enter") startQuiz();
     });
 
     nextBtn.addEventListener("click", () => {
@@ -499,7 +465,10 @@
     });
 
     restartBtn.addEventListener("click", () => {
-      startQuiz();
+      startCount += 1;
+      playerInfoEl.textContent = `${nickname} | starts: ${startCount}`;
+      resetQuizState();
+      setFeedback(`Welcome back ${nickname}! This is start number ${startCount}.`, "ok");
     });
 
     showPairEl.addEventListener("change", () => {
