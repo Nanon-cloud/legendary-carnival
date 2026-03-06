@@ -1,54 +1,127 @@
-<div class="wrap">
-  <div class="card">
-    <h1>Thai Consonant Drill</h1>
-    <p class="sub">Please enter your name before starting the quiz.</p>
+<div id="nameScreen" class="start-screen">
+  <div class="start-box">
+    <label for="nicknameInput" class="label">Please enter your name first</label>
+    <input id="nicknameInput" class="input" type="text" placeholder="Your name" maxlength="30" />
+    <button id="startBtn" class="btn primary" type="button">Start Quiz</button>
+    <div id="startMessage" class="feedback">You must enter your name before starting.</div>
+  </div>
+</div>
 
-    <!-- Screen 1: Name input only -->
-    <div id="nameScreen">
-      <div class="start-box">
-        <label for="nicknameInput" class="label">Enter your name</label>
-        <input
-          id="nicknameInput"
-          class="input"
-          type="text"
-          placeholder="Your name"
-          maxlength="30"
-        />
-        <button id="startBtn" class="btn primary" type="button">Start Quiz</button>
-        <div id="startMessage" class="small-note"></div>
-      </div>
+<div id="quizScreen" class="hidden">
+  <div class="topbar">
+    <div class="pill">
+      <span>👤 Player:</span>
+      <strong id="playerInfo"></strong>
+    </div>
+    <div class="pill">
+      <span>❤️ ชีวิต:</span>
+      <span class="hearts" id="hearts"></span>
+    </div>
+    <div class="pill"><span>คะแนน:</span> <strong id="score">0</strong></div>
+    <div class="pill"><span>เหลือ:</span> <strong id="remaining">0</strong></div>
+    <label class="pill toggle" title="แสดงชื่อแบบเต็ม เช่น ก ไก่">
+      <input id="showPair" type="checkbox" />
+      <span>แสดงแบบ “ก ไก่”</span>
+    </label>
+  </div>
+
+  <div class="quiz">
+    <div class="prompt">
+      <p class="big" id="currentChar">ก</p>
+      <p class="question" id="questionText">พยัญชนะนี้ชื่อว่าอะไร?</p>
     </div>
 
-    <!-- Screen 2: Quiz -->
-    <div id="quizScreen" class="hidden">
-      <div class="topbar">
-        <div class="pill">
-          <span>👤 Player:</span>
-          <strong id="playerInfo"></strong>
-        </div>
-        <div class="pill">
-          <span>❤️ Lives:</span>
-          <span class="hearts" id="hearts"></span>
-        </div>
-        <div class="pill"><span>Score:</span> <strong id="score">0</strong></div>
-        <div class="pill"><span>Remaining:</span> <strong id="remaining">0</strong></div>
-      </div>
+    <div class="grid" id="choices"></div>
 
-      <div class="quiz">
-        <div class="prompt">
-          <p class="big" id="currentChar">ก</p>
-          <p class="question" id="questionText">What is the name of this Thai consonant?</p>
-        </div>
+    <div class="feedback" id="feedback">กรอกชื่อก่อนเริ่ม</div>
 
-        <div class="grid" id="choices"></div>
+    <div class="actions">
+      <button class="btn primary" id="nextBtn" disabled>ข้อถัดไป</button>
+      <button class="btn danger" id="restartBtn">เริ่มใหม่</button>
+    </div>
 
-        <div class="feedback" id="feedback">Choose the correct answer.</div>
-
-        <div class="actions">
-          <button class="btn primary" id="nextBtn" type="button" disabled>Next</button>
-          <button class="btn danger" id="restartBtn" type="button">Restart</button>
-        </div>
-      </div>
+    <div class="footer">
+      ระบบจะ “ไม่ถามซ้ำ” ตัวที่คุณตอบถูกแล้ว ✅
     </div>
   </div>
 </div>
+
+<style>
+  :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #0b0f17; color: #e9eefc; }
+
+  /* your existing CSS here */
+
+  .hidden { display: none !important; }
+
+  .start-screen {
+    display: grid;
+    gap: 14px;
+    margin-top: 14px;
+  }
+
+  .start-box {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 14px;
+    padding: 16px;
+    display: grid;
+    gap: 12px;
+  }
+
+  .label {
+    font-size: 14px;
+    opacity: .9;
+  }
+
+  .input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.08);
+    color: #e9eefc;
+    font-size: 15px;
+    outline: none;
+  }
+</style>
+
+const nameScreen = document.getElementById("nameScreen");
+const quizScreen = document.getElementById("quizScreen");
+const nicknameInput = document.getElementById("nicknameInput");
+const startBtn = document.getElementById("startBtn");
+const startMessage = document.getElementById("startMessage");
+const playerInfoEl = document.getElementById("playerInfo");
+
+let nickname = "";
+
+function startQuiz() {
+  const rawName = nicknameInput.value.trim();
+
+  if (!rawName) {
+    startMessage.textContent = "Please enter your name first.";
+    return;
+  }
+
+  nickname = rawName;
+  playerInfoEl.textContent = nickname;
+
+  nameScreen.classList.add("hidden");
+  quizScreen.classList.remove("hidden");
+
+}
+
+startBtn.addEventListener("click", startQuiz);
+
+nicknameInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    startQuiz();
+  }
+});
+
+restartBtn.addEventListener("click", () => {
+  nameScreen.classList.remove("hidden");
+  quizScreen.classList.add("hidden");
+  nicknameInput.value = nickname;
+});
