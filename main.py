@@ -6,6 +6,10 @@ from psycopg2.extras import RealDictCursor
 
 app = FastAPI()
 
+@app.get("/start")
+def start_info():
+    return {"message": "Use POST /start to begin the quiz"}
+
 # Database connection
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/dbname")
 try:
