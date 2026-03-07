@@ -66,7 +66,7 @@ document.getElementById('start-btn').onclick = async () => {
         return;
     }
     try {
-        const response = await fetch('https://your-backend.onrender.com/start', {
+        const response = await fetch('https://thai-drill-backend.onrender.com/start', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name })
