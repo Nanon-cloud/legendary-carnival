@@ -1,0 +1,115 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #001122, #003366);
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+h1, h2 {
+    color: #ffffff;
+    text-shadow: 0 0 5px #00aaff;
+}
+
+input {
+    padding: 10px;
+    font-size: 16px;
+    margin: 10px;
+    border: 2px solid #00aaff;
+    border-radius: 5px;
+    background: #002244;
+    color: #ffffff;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 10px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #00aaff, #0077cc);
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 170, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #0077cc, #005599);
+    box-shadow: 0 6px 12px rgba(0, 170, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.big-next {
+    font-size: 20px;
+    padding: 15px 30px;
+}
+
+#next-btn {
+    display: block;
+    margin: 20px auto;
+}
+
+#hearts {
+    font-size: 24px;
+    margin: 20px;
+    color: #ff4444;
+}
+
+#streak {
+    font-size: 18px;
+    margin: 10px;
+    color: #ffff00;
+}
+
+#question {
+    font-size: 20px;
+    margin: 20px;
+    color: #ffffff;
+}
+
+#options {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px;
+}
+
+.option {
+    margin: 10px;
+    padding: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #004466, #006688);
+    border: 2px solid #00aaff;
+    border-radius: 5px;
+    color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 170, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.option:hover {
+    background: linear-gradient(135deg, #006688, #0088aa);
+    box-shadow: 0 6px 12px rgba(0, 170, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+#feedback {
+    font-size: 18px;
+    margin: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.correct {
+    background: linear-gradient(135deg, #004400, #006600);
+    color: #aaffaa;
+}
+
+.incorrect {
+    background: linear-gradient(135deg, #440000, #660000);
+    color: #ffaaaa;
+}
