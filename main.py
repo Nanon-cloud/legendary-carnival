@@ -8,7 +8,11 @@ app = FastAPI()
 
 # Database connection
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/dbname")
-conn = psycopg2.connect(DATABASE_URL)
+try:
+    conn = psycopg2.connect(DATABASE_URL)
+except Exception as e:
+    print(f"Database connection failed: {e}")
+    conn = None
 
 class UserStart(BaseModel):
     name: str
@@ -26,17 +30,23 @@ async def startup():
 
 @app.post("/start")
 async def start_quiz(user: UserStart):
+    if not conn:
+        raise HTTPException(status_code=500, detail="Database not connected")
     name = user.name.strip()
     if not name:
         raise HTTPException(status_code=400, detail="Name cannot be empty")
     
-    with conn.cursor(cursor_factory=RealDictCursor) as cur:
-        # Increment count
-        cur.execute("""
-            INSERT INTO user_starts (name, count) VALUES (%s, 1)
-            ON CONFLICT (name) DO UPDATE SET count = user_starts.count + 1
-            RETURNING count
-        """, (name,))
-        result = cur.fetchone()
-        conn.commit()
-        return {"count": result["count"]}
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            # Increment count
+            cur.execute("""
+                INSERT INTO user_starts (name, count) VALUES (%s, 1)
+                ON CONFLICT (name) DO UPDATE SET count = user_starts.count + 1
+                RETURNING count
+            """, (name,))
+            result = cur.fetchone()
+            conn.commit()
+            return {"count": result["count"]}
+    except Exception as e:
+        print(f"Database error: {e}")
+        raise HTTPException(status_code=500, detail="Database error")
