@@ -59,22 +59,33 @@ function shuffle(array) {
     return array;
 }
 
-document.getElementById('start-btn').onclick = () => {
+document.getElementById('start-btn').onclick = async () => {
     name = document.getElementById('name-input').value.trim();
     if (!name) {
         alert('Please enter your name');
         return;
     }
-    document.getElementById('name-screen').style.display = 'none';
-    document.getElementById('drill-screen').style.display = 'block';
-    document.getElementById('greeting').textContent = `Hello, ${name}! Let's start the drill.`;
-    shuffled = shuffle([...consonants]);
-    currentIndex = 0;
-    hearts = 3;
-    streak = 0;
-    updateHearts();
-    updateStreak();
-    loadQuestion();
+    try {
+        const response = await fetch('https://your-backend.onrender.com/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+        });
+        const data = await response.json();
+        const count = data.count;
+        document.getElementById('name-screen').style.display = 'none';
+        document.getElementById('drill-screen').style.display = 'block';
+        document.getElementById('greeting').textContent = `Hello, ${name}! (Started ${count} times) Let's start the drill.`;
+        shuffled = shuffle([...consonants]);
+        currentIndex = 0;
+        hearts = 3;
+        streak = 0;
+        updateHearts();
+        updateStreak();
+        loadQuestion();
+    } catch (error) {
+        alert('Failed to connect to server. Please try again.');
+    }
 };
 
 function loadQuestion() {
